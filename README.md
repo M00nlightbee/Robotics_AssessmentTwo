@@ -7,156 +7,165 @@ This submission aligns with AITS 5 of the Artificial Intelligence Transparency S
 
 ---
 
-## Project Overview
+## Project Inspiration
 In this task a robot system is built to perform a repetitive, complex, task automatically and without the need for intervention or control from an operator.
 As this project is about solving real world problem, i decided to build a security system with moveable parts for a bicycle as there are thousands of bicycle being stolen with no way of tracking them.
-The Police are usually unable to get leads to locate these stolen bicycles from my personal experience going through this myself and also seeing other people be unable to locate their bicycles.
+
+The Police are usually unable to get leads to locate these stolen bicycles.
 
 There has been an experiment to see if one could use the apple airtags to keep track of stolen and it was found that tags were unfortunately not effiecent.
-Hence why i have decided to build a system that stop the theft and allow 
 
-The robotic system:
-1. Explores and maps an 8×8 maze
-2. Detects and stores wall data
-3. Records visited tiles
-4. Computes the shortest route using the A* algorithm
-5. Drives to the finish tile using the shortest route
-6. Returns safely back to the start position
+## Project Overview
+This an event driven robotic system, it integrates radar sensing with computer vision to autonomously detect and respond to human presence.
 
-<div align="center">
-  <img src="maze_grid.png" alt="Maze Grid" width="700"height="500"/>
-</div>
+A robotic system that detects motion using a radar sensor, activates a live camera stream, performs face recognition, and dynamically adapts its behaviour based on whether a detected individual is authorized or unknown
+
+## Hardware Components
+
+- 3× ESP32 boards
+- ESP32-CAM with ESP32-CAM-MB
+- LD2410 radar sensor
+- Servo motor
+- Buzzer
+- LCD display
 
 ## Environment
 
-- **Playground dimensions**: 2000mm × 2000mm
-- **Coordinate range**: -1000mm to +1000mm (X and Y axes)
-- **Maze grid size**:  8 × 8
-- **Tile size**: 250mm per tile
+- **Arduino IDE**: Write code uploaed to the ESP32 Boards
+- **Visual Studio Code**: Interpreter for Python
 
 > [!NOTE]
-> Each tile in the maze corresponds exactly to one 1000 / 4 = 250mm robot movement.
-
-[Coordinate-System-in-VEXcode](https://kb.vex.com/hc/en-us/articles/360041366072-Understanding-the-Coordinate-System-in-VEXcode-VR#directions-header-4https://kb.vex.com/hc/en-us/articles/360041366072-Understanding-the-Coordinate-System-in-VEXcode-VR#directions-header-4)
-
+> To perform face recognition Install dependencies 
+```
+pip install opencv-python
+```
+```
+pip install pyserial
+```
 ---
 ### Architecture
 
-The program is divided into four main systems:
+The program is divided into three layers:
 
-#### 1. Maze Exploration
+#### 1. Sensor and Vision Layer
 
-- Uses front distance sensor for wall detection
-- Converts real-world millimetre coordinates into grid coordinates
-- Implements right-hand wall following movement logic
-- **Stores**:
-  - Visited tiles (maze_grid)
-  - Wall data (maze_walls)
-  - Full movement history (path_history)
+- **Radar Sensor**:
+  - Detects presence, motion, and stationary targets
+  - Operates in real-time using LD2410
+- **Camera**:
+  - Used for Live Camera Streaming
+    - Activated only when motion is detected
+    - Reduces unnecessary processing
+  - Used for Face Recognition (OpenCV)
+    - Distinguishes between known and unknown individuals
+    - Uses LBPH algorithm for efficient recognition
 
-#### 2. Maze Mapping
-Each tile stores wall data in four directions:
+#### 2. Robot Brain
 
-```
-{"N": False, "E": False, "S": False, "W": False}
-```
+- **State Machine Control**:
+  - IDLE → SCANNING → TRACKING → ALERT
+- **ESP-NOW Communication**:
+  - Low-latency wireless communication between nodes
+  - No router required
 
-#### 3. Shortest Path Algorithm – A*
+#### 3. Control Layer
 
-The robot uses the A* search algorithm to calculate the optimal path.
-
-A* is chosen because:
-- It guarantees the shortest path
-- It is more efficient than Dijkstra’s algorithm
-- It uses informed search via a heuristic
-
-**Heuristic Used**: Manhattan Distance
-```
-h(n) = |x_1 - x_2| + |y_1 - y_2|
-```
-- The robot moves only in four directions
-- No diagonal movement is allowed
-- Each move has equal cost (1 tile)
-
-#### 4. Return-to-Home
-After reaching the finish tile:
-- The robot recalculates the shortest path
-- Navigates safely back to the starting tile
-- Reuses the same A* function
+The system performs it robotic capabilities using components such as:
+- Servo Controller (Camera Sweep)  
+- Buzzer (Audio Feedback) 
+- LCD Display (System Status, e.g: Traget: Idle)
 
 ---
 
-### Key Functions
+### Key Functions and Scripts
 
-#### refresh_status()
-Updates live robot X, Y and heading values.
-```python
-def refresh_status():
-    global robot_status
-    robot_status[0] = location.position(X, MM)
-    robot_status[1] = location.position(Y, MM)
-    robot_status[2] = drivetrain.heading(DEGREES)
+In the Arduino IDE to get the mac address for each ESP32 board
+#### MAC Address code
+```c++
+#include "WiFi.h"
+
+void setup() {
+  Serial.begin(115200);
+
+  // WIFI_STA mode to initialize the WiFi hardware
+  WiFi.mode(WIFI_STA); 
+  
+  // Optional: You may not need a delay for just to be save you can leave uncommented
+  while (WiFi.status() == WL_STOPPED) { 
+    delay(10); 
+    }
+
+  Serial.print("MAC Address: ");
+  Serial.println(WiFi.macAddress());
+}
+
+void loop() {}
 ```
 
-#### update_maze_list()
-- Converts world coordinates into grid indices
-- Detects walls
-- Updates visited tile list
-
-#### astar(start, goal)
-- Implements A* search
-- Uses g_score and f_score dictionaries
-- Returns optimal tile path
-
-#### drive_quickest_route(target_tile)
-- Converts A* path into physical robot movement
-- Adjusts heading
-- Drives tile-by-tile
+#### Test Script for Video
 ```python
-def drive_quickest_route(target_tile):
-    curr_row, curr_col, curr_heading = update_maze_list()
-    path = astar((curr_row, curr_col), target_tile)
-    
-    if not path:
-        brain.print("\nNo path found to target!\n")
-        return
 
-    # Highlight the travel path
-    pen.move(DOWN)
-    pen.set_pen_color(GREEN) 
-    pen.set_pen_width(MEDIUM)
+import cv2
 
-    for next_row, next_col in path:
-        if next_row > curr_row: 
-            target_h = 0
-        elif next_row < curr_row: 
-            target_h = 180
-        elif next_col > curr_col: 
-            target_h = 90
-        elif next_col < curr_col: 
-            target_h = 270
+# Connect to ESP32 camera stream
+video = cv2.VideoCapture("http://<camera-ip>:81/stream")
+
+# Check if connection was successful
+if not video.isOpened():
+    print("Error: Could not open video stream from ESP32")
+    exit()
+
+print("Camera connected successfully!")
+
+try:
+    while True:
+        # Read frame from the stream
+        ret, frame = video.read()
         
-        drivetrain.turn_to_heading(target_h, DEGREES)
-        drivetrain.drive_for(FORWARD, 250, MM)
-        curr_row, curr_col = next_row, next_col
+        if not ret:
+            print("Error: Failed to read frame")
+            break
+        
+        # Display the frame
+        cv2.imshow("ESP32 Camera Stream", frame)
+        
+        # Press 'q' to exit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+except KeyboardInterrupt:
+    print("Stream interrupted by user")
+
+finally:
+    # Release resources
+    video.release()
+    cv2.destroyAllWindows()
+    print("Camera stream closed")
+
 ```
-
-----
-### False Wall
-To handle the maze that has a false wall , a manual wall is created within the while loop
-
-<div align="center">
-  <img src="false_wall.png" alt="False Wall Map" width="700"height="500"/>
-</div>
 
 > [!CAUTION]
-> To move the robot in the maze with the false wall you must include:
+> ESP32 CAM only connects to WiFi 2.4GHz
 
-```python
-# Create a wall between (6,0) and (6,1)
-maze_walls[6][0]["E"] = True
-maze_walls[6][1]["W"] = True
+### Connect ESP32 CAM WiFi 2.4GHz
+If your WiFi is not on 2.4GHz your ESP32 CAM will not connect to WiFi.
+
+Here is a step by step walkaround:
+
+1. Go to settings and click on Network & Internet
+2. Click on Mobile hotspot, turn it on
+3. Click on edit and give a name and password. (MAKE SURE NOT TO USE A SPECIAL FOR THE NAME AND NO SPACES)
+```c++
+# Replace with the name and password you have created
+# You will find this in your CameraWebServer code in the Arduino IDE
+const char *ssid = "**************";
+const char *password = "**************";
 ```
+4. While in edit mode , change the Network band to 2.4GHz
+5. Your ESP32 CAM should show up with your IP address , your CAM is streaming to
+
+> [!NOTE]
+> You may sometimes need to press the reset button on your CAM 
 
 ----
 
@@ -164,31 +173,43 @@ maze_walls[6][1]["W"] = True
 
 | Feature                        | Status | Notes          |
 | ------------------------------ | ------ | ---------------
-| Full maze exploration          | ✅     | Implemented     
-| Dynamic wall detection         | ✅     | Implemented                   
-| ASCII map rendering in console | ✅     | Implemented                   
-| Path history logging           | ✅     | Implemented                
-| A* shortest path computation   | ✅     | Implemented              
-| Efficient tile-based movement  | ✅     | Implemented             
-| Return-to-start functionality  | ✅     | Implemented         
+| Radar Motion Detection         | ✅     | Implemented     
+| Live Camera Streaming          | ✅     | Implemented    
+| Face Detection (OpenCV)        | ✅     | Implemented                 
+| Face Recognition (OpenCV)      | ⚠️     | Partially Implemented                   
+| State Machine Control          | ✅     | Implemented                
+| ESP-NOW Communication          | ✅     | Implemented              
+| Multi-Modal Feedback           | ✅     | Implemented             
 
 ---
 
 ### Future Improvements
 
-- Use one loop to explore all maze including one with false wall
-- Compare A* algorithm to other algorithms 
+- Train face with different lighting or downgrade from current python version to use a [**Better Model**](https://github.com/ageitgey/face_recognition) 
+- Upgrade to ESP32-S3 to compute computer vision directly using the board
+- Lock onto face when detected and track movement of face with servo instead(maybe add another servo for a close to 360degree vision)
+- Fine tune the radar for specific distance 
 
 ---
 
 ### Setup
 
-1. Open [**VEXcode Playground**](https://vr.vex.com/)
-2. Click on file and choose **New Text Project**
-3. Choose the **Dynamic Wall Maze** playground
-4. Copy and paste code 
-5. Then click start to run the code
-
+1. Downlaod the [**Arduino IDE**](https://docs.arduino.cc/software/ide/)
+2. Open the Arduino IDE after download
+3. Click on Tools → Board → Boards Manager
+4. In the search bar type ESP32 and install the one by Espressif Systems
+5. Click on the Library manager (The middle icon on the left looks like a bookshelf)
+6. Use the search bar to downlad all 3 libraries:
+    1. LiquidCrystal
+    2. ESP32Servo
+    3. MyLD2410
+7. Click on Tools → Board → esp32 → find your board name
+8. Upload the MAC Address code to each ESP32 board and make note of them and which board they belong to
+9. To Get the CAM working [**Follow Steps**](https://randomnerdtutorials.com/upload-code-esp32-cam-mb-usb/)
+10. Run the python scripts: 
+    1. capture.py (collects your Face Dataset)
+    2. train_model.py (Train Face Recognition Model)
+    3. main.py
 ---
 
 ### References
