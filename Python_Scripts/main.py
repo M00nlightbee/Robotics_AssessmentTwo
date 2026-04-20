@@ -45,9 +45,6 @@ while True:
             cv2.destroyAllWindows()
             vision_active = False
 
-        send("RADAR_ON")
-        continue
-
     # ===== VISION SYSTEM =====
     if vision_active and video is not None:
 
