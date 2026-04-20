@@ -9,11 +9,9 @@ This submission aligns with AITS 5 of the Artificial Intelligence Transparency S
 
 ## Project Inspiration
 In this task a robot system is built to perform a repetitive, complex, task automatically and without the need for intervention or control from an operator.
-As this project is about solving real world problem, i decided to build a security system with moveable parts for a bicycle as there are thousands of bicycle being stolen with no way of tracking them.
+As this project is about solving real world problems, i decided to build a security system with moveable parts for a bicycle as there are thousands of bicycle being stolen with no way of tracking them.
 
-The Police are usually unable to get leads to locate these stolen bicycles.
-
-There has been an experiment to see if one could use the apple airtags to keep track of stolen and it was found that tags were unfortunately not effiecent.
+There has been an experiment to see if one could use the apple airtags to keep track of stolen and it was found that tags were unfortunately not effiecent.[**Video Documentation of the experiment**](https://www.youtube.com/watch?v=S0NRo0uoehw)  
 
 ## Project Overview
 This an event driven robotic system, it integrates radar sensing with computer vision to autonomously detect and respond to human presence.
@@ -28,6 +26,8 @@ A robotic system that detects motion using a radar sensor, activates a live came
 - Servo motor
 - Buzzer
 - LCD display
+- Jumper Wires
+- Breadboards
 
 ## Environment
 
@@ -35,7 +35,7 @@ A robotic system that detects motion using a radar sensor, activates a live came
 - **Visual Studio Code**: Write code for computer vision
 
 > [!NOTE]
-> To perform face recognition Install dependencies 
+> Install dependencies to run python codes with no errors
 ```
 pip install opencv-python
 ```
