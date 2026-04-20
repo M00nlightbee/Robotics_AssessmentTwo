@@ -31,8 +31,8 @@ A robotic system that detects motion using a radar sensor, activates a live came
 
 ## Environment
 
-- **Arduino IDE**: Write code uploaed to the ESP32 Boards
-- **Visual Studio Code**: Interpreter for Python
+- **Arduino IDE**: Write c++ code for ESP32 Boards
+- **Visual Studio Code**: Write code for computer vision
 
 > [!NOTE]
 > To perform face recognition Install dependencies 
@@ -214,15 +214,15 @@ const char *password = "**************";
 
 ### References
 
-- [**Unit 2 - Moving Your Robot**](https://education.vex.com/stemlabs/cs/cs-level-1-vexcode-vr-python/moving-your-robot/introduction)
-- [**Unit 4 - Navigating a Maze**](https://education.vex.com/stemlabs/cs/cs-level-1-vexcode-vr-python/navigating-a-maze/introduction)
-- [**Unit 5 - Detecting Walls from a Distance**](https://education.vex.com/stemlabs/cs/cs-level-1-vexcode-vr-python/detecting-walls-from-a-distance/introduction)
-- [**Using Example Python Projects in VEXcode VR**](https://kb.vex.com/hc/en-us/articles/360052385852-Using-Example-Python-Projects-in-VEXcode-VR)
-- [**Vex Vr 8 - Dynamic Wall Maze**](https://www.youtube.com/watch?v=xh4l72Lf8W0)
-- [**Coordinate-System-in-VEXcode**](https://kb.vex.com/hc/en-us/articles/360041366072-Understanding-the-Coordinate-System-in-VEXcode-VR#directions-header-4https://kb.vex.com/hc/en-us/articles/360041366072-Understanding-the-Coordinate-System-in-VEXcode-VR#directions-header-4)
-- [**Maze Runner - Shortest Path Algorithms**](https://www.kaggle.com/code/mexwell/maze-runner-shortest-path-algorithms#Introduction)
-- [**A-Star (A\*) Search for Solving a Maze using Python (with visualization)**](https://levelup.gitconnected.com/a-star-a-search-for-solving-a-maze-using-python-with-visualization-b0cae1c3ba92)
-- [**The A\* Algorithm: A Complete Guide**](https://www.datacamp.com/tutorial/a-star-algorithm)
-- [**Readme**](https://getmarkon.com)
+- [**ESP32io Tutorials**](https://esp32io.com/tutorials/esp32-software-installation)
+- [**Interfacing 16X2 LCD Module with ESP32 with and without I2C**](https://www.circuitschools.com/interfacing-16x2-lcd-module-with-esp32-with-and-without-i2c/)
+- [**LD2410C Human Presence Detector**](https://dronebotworkshop.com/ld2410c-human-sensor/)
+- [**Effective Ways To Detect People With Common Sensors**](https://www.youtube.com/watch?v=LNeSz5hfTLI)
+- [**How to Interface LCD With ESP32**](https://www.instructables.com/ESP32-How-to-Interface-LCD-With-ESP32-Microcontrol/)
+- [**Create Custom Animations on 16x2 LCD Displays**](https://projecthub.arduino.cc/tusindfryd/create-custom-animations-on-16x2-lcd-displays-57d776)
+- [**Using the ESP32-CAM-MB**](https://www.espboards.dev/blog/flash-any-esp32-with-esp32-cam-mb/)
+- [**Interfacing ESP32 And 16×2 LCD Parallel Data (Without I2C)**](https://www.makerguides.com/interfacing-esp32-and-16x2-lcd-parallel-data-without-i2c/)
+- [**ESP32-CAM**](https://randomnerdtutorials.com/esp32-cam-video-streaming-web-server-camera-home-assistant/)
+- [**ESP32-CAM AI-Thinker using ESP32-CAM-MB USB Programmer**](https://randomnerdtutorials.com/upload-code-esp32-cam-mb-usb/)
 
 ---
